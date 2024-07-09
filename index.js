@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const studentRoute = require("./controller/studentRoute");
@@ -11,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb+srv://projectCRUD:sanjaym@cluster0.e2s33vu.mongodb.net/Schooll_db", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb+srv://projectCRUD:${process.env.MONGODB_PASSWORD}@cluster0.e2s33vu.mongodb.net/Schooll_db?retryWrites=true&w=majority&appName=Cluster0`, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 db.on("open", () => console.log("Connected"));
@@ -26,3 +27,4 @@ app.get('/', (req, res) => {
 app.listen(4000, () => {
     console.log("Server is running on port 4000");
 });
+console.log("MongoDB Password:", process.env.MONGODB_PASSWORD);
