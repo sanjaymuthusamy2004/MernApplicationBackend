@@ -7,34 +7,27 @@ const cors = require("cors");
 
 const app = express();
 
-// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-// MongoDB connection
-const mongoURI = `mongodb+srv://projectCRUD:${encodeURIComponent(process.env.MONGODB_PASSWORD)}@cluster0.e2s33vu.mongodb.net/Schooll_db?retryWrites=true&w=majority&appName=Cluster0`;
-mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false, // Optional but recommended
-    useCreateIndex: true // Optional but recommended
-}).then(() => {
-    console.log("MongoDB connected");
-}).catch(err => {
-    console.error("MongoDB connection error:", err);
-});
+mongoose.connect(
+    `mongodb+srv://projectCRUD:${process.env.MONGODB_PASSWORD}@cluster0.e2s33vu.mongodb.net/Schooll_db?retryWrites=true&w=majority&appName=Cluster0`,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+);
 
-// Routes
-app.use("/students", studentRoute); // Use plural endpoint for RESTful convention
+const db = mongoose.connection;
+db.on("error", (err) => console.error("MongoDB connection error:", err));
+db.once("open", () => console.log("Connected to MongoDB"));
 
-// Basic route
+app.use("/studentRoute", studentRoute);
+
 app.get('/', (req, res) => {
     res.send('Welcome to the Student API');
 });
 
-// Start server
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
